@@ -15,19 +15,39 @@ def blackjack_shuffle(player):
 	if player == "dealer":
 		if len(dealer_score) == 2:
 			if dealer_score[0] + dealer_score[1] == 21:
-				messagebox.showinfo("Dealer Wins!", "Blackjack! Dealer Wins!")
-				# Disable buttons
-				card_button.config(state="disabled")
-				stand_button.config(state="disabled")
-
+				# Update status
+				blackjack_status["dealer"] = "yes"
+				
 
 	if player == "player":
 		if len(player_score) == 2:
 			if player_score[0] + player_score[1] == 21:
-				messagebox.showinfo("Player Wins!", "Blackjack! Player Wins!")
-				# Disable buttons
-				card_button.config(state="disabled")
-				stand_button.config(state="disabled")
+				# Update status
+				blackjack_status["player"] = "yes"
+				
+
+
+	if len(dealer_score) == 2 and len(player_score) == 2:
+		# Check For Push/Tie
+		if blackjack_status["dealer"] == "yes" and blackjack_status["player"] == "yes":
+			# It's a push - tie
+			messagebox.showinfo("Push!", "It's a Tie!")
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
+		
+		# Check for Dealer Win
+		elif blackjack_status["dealer"] == "yes":
+			messagebox.showinfo("Dealer Wins!", "Blackjack! Dealer Wins!")
+			# Disable buttons
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
+
+		# Check For Player Win
+		elif blackjack_status["player"] == "yes":
+			messagebox.showinfo("Player Wins!", "Blackjack! Player Wins!")
+			# Disable buttons
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
 
 
 
@@ -50,6 +70,9 @@ def resize_cards(card):
 
 # Shuffle The Cards
 def shuffle():
+	# Keep track of winning
+	global blackjack_status 
+	blackjack_status = {"dealer":"no", "player":"no"}
 	# Enable buttons
 	card_button.config(state="normal")
 	stand_button.config(state="normal")
