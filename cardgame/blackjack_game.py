@@ -49,30 +49,27 @@ def blackjack_shuffle(player):
 			card_button.config(state="disabled")
 			stand_button.config(state="disabled")
 
-
-
-
 # Resize Cards
 def resize_cards(card):
-	#open the image
+	# Open the image
 	our_card_img = Image.open(card)
 
-	#resize the image
+	# Resize The Image
 	our_card_resize_image = our_card_img.resize((150, 218))
-
-	#output the card
+	
+	# output the card
 	global our_card_image
 	our_card_image = ImageTk.PhotoImage(our_card_resize_image)
 
-	#Return the card
+	# Return that card
 	return our_card_image
-
 
 # Shuffle The Cards
 def shuffle():
 	# Keep track of winning
 	global blackjack_status 
 	blackjack_status = {"dealer":"no", "player":"no"}
+
 	# Enable buttons
 	card_button.config(state="normal")
 	stand_button.config(state="normal")
