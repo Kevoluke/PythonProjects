@@ -9,9 +9,55 @@ root.title('Card Deck')
 root.geometry("1200x800")
 root.configure(background="green")
 
+# Stand
+def stand():
+	global player_total, dealer_total, player_score
+	# Keep track of score totals
+	player_total = 0
+	dealer_total = 0
+
+	# Get the dealers score total
+	for score in dealer_score:
+		# Add up score
+		dealer_total += score
+
+	# Loop thru player score list and add up cards
+	for score in player_score:
+		# Add up score
+		player_total += score
+
+	# Freeze the buttons
+	card_button.config(state="disabled")
+	stand_button.config(state="disabled")
+
+	# Logic
+	if dealer_total >= 17:
+		# Check if bust
+		if dealer_total > 21:
+			# Bust
+			messagebox.showinfo("Player Wins!!", f"Player Wins!  Dealer: {dealer_total}  Player: {player_total}")
+		elif dealer_total == player_total:
+			# Tie
+			messagebox.showinfo("Tie!!", f"It's a Tie!!  Dealer: {dealer_total}  Player: {player_total}")
+		elif dealer_total > player_total:
+			# Dealer wins
+			messagebox.showinfo("Dealer Wins!!", f"Dealer Wins!  Dealer: {dealer_total}  Player: {player_total}")
+		else:
+			# Player Wins!
+			messagebox.showinfo("Player Wins!!", f"Player Wins!  Dealer: {dealer_total}  Player: {player_total}")
+	else:
+		# Add Card To Dealer
+		dealer_hit()
+		# Recalculate Stuff
+		stand()
+
 
 # Test for blackjack on shuffle
 def blackjack_shuffle(player):
+	global player_total, dealer_total, player_score
+	# Keep track of score totals
+	player_total = 0
+	dealer_total = 0
 	if player == "dealer":
 		if len(dealer_score) == 2:
 			if dealer_score[0] + dealer_score[1] == 21:
@@ -24,7 +70,38 @@ def blackjack_shuffle(player):
 			if player_score[0] + player_score[1] == 21:
 				# Update status
 				blackjack_status["player"] = "yes"
-				
+		else:
+			# Loop thru player score list and add up cards
+			for score in player_score:
+				# Add up score
+				player_total += score
+
+			if player_total == 21:
+				blackjack_status["player"] = "yes"
+			
+			elif player_total > 21:
+				# Check for ace conversion
+				for card_num, card in enumerate(player_score):
+					if card == 11:
+						player_score[card_num] = 1
+
+						# Clear player total and recalculate
+						player_total = 0
+						for score in player_score:
+							# Add up score
+							player_total += score
+						
+						# Check for over 21
+						if player_total > 21:
+							blackjack_status["player"] = "bust"
+
+				else:
+					# Check new totals for 21 or over 21
+					if player_total == 21:
+						blackjack_status["player"] = "yes"
+					if player_total > 21:
+						blackjack_status["player"] = "bust"
+
 
 
 	if len(dealer_score) == 2 and len(player_score) == 2:
@@ -48,6 +125,36 @@ def blackjack_shuffle(player):
 			# Disable buttons
 			card_button.config(state="disabled")
 			stand_button.config(state="disabled")
+	
+	# Check for 21 during the game
+	else:
+		# Check For Push/Tie
+		if blackjack_status["dealer"] == "yes" and blackjack_status["player"] == "yes":
+			# It's a push - tie
+			messagebox.showinfo("Push!", "It's a Tie!")
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
+		
+		# Check for Dealer Win
+		elif blackjack_status["dealer"] == "yes":
+			messagebox.showinfo("Dealer Wins!", "21! Dealer Wins!")
+			# Disable buttons
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
+
+		# Check For Player Win
+		elif blackjack_status["player"] == "yes":
+			messagebox.showinfo("Player Wins!", "21! Player Wins!")
+			# Disable buttons
+			card_button.config(state="disabled")
+			stand_button.config(state="disabled")
+
+	# Check for player bust
+	if blackjack_status["player"] == "bust":
+		messagebox.showinfo("Player Busts!", f"Player Loses! {player_total}")
+		# Disable buttons
+		card_button.config(state="disabled")
+		stand_button.config(state="disabled")
 
 # Resize Cards
 def resize_cards(card):
@@ -131,7 +238,6 @@ def dealer_hit():
 			deck.remove(dealer_card)
 			# Append Card To Dealer List
 			dealer.append(dealer_card)
-
 			# Append to dealer score list and convert facecards to 10 or 11
 			dcard = int(dealer_card.split("_", 1)[0])
 			if dcard == 14:
@@ -212,7 +318,7 @@ def player_hit():
 				player_score.append(10)
 			else:
 				player_score.append(pcard)
-				
+
 			# Output Card To Screen
 			global player_image1, player_image2, player_image3, player_image4, player_image5
 			
