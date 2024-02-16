@@ -230,7 +230,9 @@ def shuffle():
 
 def dealer_hit():
 	global dealer_spot
-	if dealer_spot < 5:
+	global player_total, dealer_total, player_score
+
+	if dealer_spot <= 5:
 		try:
 			# Get the player Card
 			dealer_card = random.choice(deck)
@@ -287,6 +289,28 @@ def dealer_hit():
 				# Increment our player spot counter
 				dealer_spot += 1
 
+				# See if 5 card bust
+				# grab our totals
+				player_total = 0
+				dealer_total = 0
+
+				# get player score
+				for score in player_score:
+					player_total += score
+
+				# get player score
+				for score in dealer_score:
+					dealer_total += score
+
+				# Check to see if <= 21
+				if dealer_total <= 21:
+					# We win!!
+					# Disable buttons
+					card_button.config(state="disabled")
+					stand_button.config(state="disabled")
+
+					# Pop up a message box!
+					messagebox.showinfo("Dealer Wins!!", f"Dealer Wins! Dealer:{dealer_total}   Player: {player_total}")
 
 
 			#put number of remaining cards in title bar
@@ -301,7 +325,8 @@ def dealer_hit():
 
 def player_hit():
 	global player_spot
-	if player_spot < 5:
+	global player_total, dealer_total, player_score
+	if player_spot <= 5:
 		try:
 			# Get the player Card
 			player_card = random.choice(deck)
@@ -358,6 +383,30 @@ def player_hit():
 				player_label_5.config(image=player_image5)
 				# Increment our player spot counter
 				player_spot += 1
+
+				# See if 5 card bust
+				# grab our totals
+				player_total = 0
+				dealer_total = 0
+
+				# get player score
+				for score in player_score:
+					player_total += score
+
+				# get player score
+				for score in dealer_score:
+					dealer_total += score
+
+				# Check to see if <= 21
+				if player_total <= 21:
+					# We win!!
+					# Disable buttons
+					card_button.config(state="disabled")
+					stand_button.config(state="disabled")
+
+					# Pop up a message box!
+					messagebox.showinfo("Player Wins!!", f"Player Wins! Dealer:{dealer_total}   Player: {player_total}")
+
 
 
 
